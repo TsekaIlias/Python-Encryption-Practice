@@ -4,47 +4,42 @@ import os
 import secrets
 import pyotp # type: ignore
 
-#pip install pyotp - για 2FA
-
-
 secret = pyotp.random_base32()
 totp = pyotp.TOTP(secret)
 
-
 def check_2fa():
     current_otp = totp.now()
-    print(f"\n[SYSTEM] Το OTP σας είναι: {current_otp}")
+    print(f"\n[SYSTEM] Your OTP is: {current_otp}")
 
-    user_in = input("Εισάγετε το 6-ψήφιο OTP για συνέχεια: ")
+    user_in = input("Enter the 6-digit OTP to continue: ")
 
     if totp.verify(user_in):
-        print("Επιτυχία: Η πρόσβαση επιτράπηκε.")
+        print("Success: Access granted.")
         return True
     else:
-        print("Σφάλμα: Η πρόσβαση απορρίφθηκε. Λάθος OTP.")
+        print("Error: Access denied. Incorrect OTP.")
         return False
 
-
 def do_hash():
-    fname = input("Εισάγετε το όνομα του αρχείου για hash: ")
+    fname = input("Enter the filename to hash: ")
     try:
         with open(fname, "rb") as f:
             file_data = f.read()
     except FileNotFoundError:
-        print("Το αρχείο δεν βρέθηκε.")
+        print("File not found.")
         return
 
     s = os.urandom(16)
     data_with_salt = s + file_data
 
-    print("\nΔιαθέσιμοι Αλγόριθμοι:")
+    print("\nAvailable Algorithms:")
     print("1. MD5")
     print("2. SHA-1")
     print("3. SHA-256")
     print("4. SHA-3 (Keccak)")
-    print("5. Όλοι")
+    print("5. All")
 
-    c = input("Επιλέξτε αλγόριθμο (1-5): ")
+    c = input("Select an algorithm (1-5): ")
     my_algos = []
     if c == "1":
         my_algos.append("md5")
@@ -57,7 +52,7 @@ def do_hash():
     elif c == "5":
         my_algos.extend(["md5", "sha1", "sha256", "sha3_256"])
     else:
-        print("Μη έγκυρη επιλογή.")
+        print("Invalid selection.")
         return
 
     hash_file = f"{fname}.hash"
@@ -69,15 +64,14 @@ def do_hash():
             print(f"{a.upper()} Hash: {res}")
             out_f.write(f"{a}:{s.hex()}:{res}\n")
 
-    print(f"Τα hashes και το salt αποθηκεύτηκαν στο {hash_file}")
-
+    print(f"Hashes and salt have been saved to {hash_file}")
 
 def check_file():
-    print("\n--- Κρίσιμη Ενέργεια: Απαιτείται 2FA ---")
+    print("\n--- Critical Action: 2FA Required ---")
     if not check_2fa():
         return
 
-    fname = input("Εισάγετε το όνομα του αρχείου για έλεγχο: ")
+    fname = input("Enter the filename to check: ")
     hash_file = f"{fname}.hash"
 
     try:
@@ -86,7 +80,7 @@ def check_file():
         with open(hash_file, "r") as in_f:
             lines = in_f.readlines()
     except FileNotFoundError:
-        print("Το αρχικό αρχείο ή το αρχείο hash δεν βρέθηκε.")
+        print("The original file or the hash file was not found.")
         return
 
     is_ok = True
@@ -99,36 +93,35 @@ def check_file():
         if len(parts) != 3:
             continue
 
-        a = parts[0]
-        saved_s = bytes.fromhex(parts[1])
-        saved_h = parts[2]
+        algo = parts[0]
+        saved_salt = bytes.fromhex(parts[1])
+        saved_hash = parts[2]
 
-        test_data = saved_s + file_data
-        h = hashlib.new(a)
+        test_data = saved_salt + file_data
+        h = hashlib.new(algo)
         h.update(test_data)
-        new_h = h.hexdigest()
+        new_hash = h.hexdigest()
 
-        if new_h != saved_h:
+        if new_hash != saved_hash:
             is_ok = False
             break
 
     if is_ok:
-        print("\nΤο αρχείο δεν έχει τροποποιηθεί")
+        print("\nThe file has not been modified.")
     else:
-        print("\nΤο αρχείο έχει αλλοιωθεί")
-
+        print("\nThe file has been altered or corrupted.")
 
 def get_entropy():
-    fname = input("Εισάγετε το όνομα του αρχείου για ανάλυση: ")
+    fname = input("Enter the filename for analysis: ")
     try:
         with open(fname, "rb") as f:
             file_data = f.read()
     except FileNotFoundError:
-        print("Το αρχείο δεν βρέθηκε.")
+        print("File not found.")
         return
 
     if not file_data:
-        print("Το αρχείο είναι κενό. Η εντροπία είναι 0.")
+        print("The file is empty. Entropy is 0.")
         return
 
     total = len(file_data)
@@ -142,34 +135,32 @@ def get_entropy():
         prob = count / total
         ent -= prob * math.log2(prob)
 
-    print(f"\nShannon Εντροπία: {ent:.3f}")
-
+    print(f"\nShannon Entropy: {ent:.3f}")
 
 def main():
     while True:
-        print("\n--- Μενού Επιλογών ---")
-        print("1. Υπολογισμός Hash")
-        print("2. Έλεγχος Ακεραιότητας")
-        print("3. Υπολογισμός Εντροπίας")
-        print("4. 2FA Authentication")
-        print("5. Έξοδος")
+        print("\n--- Options Menu ---")
+        print("1. Calculate Hash")
+        print("2. Check Integrity")
+        print("3. Calculate Entropy")
+        print("4. Test 2FA Authentication")
+        print("5. Exit")
 
-        c = input("Επιλέξτε μια λειτουργία (1-5): ")
+        choice = input("Select a function (1-5): ")
 
-        if c == "1":
+        if choice == "1":
             do_hash()
-        elif c == "2":
+        elif choice == "2":
             check_file()
-        elif c == "3":
+        elif choice == "3":
             get_entropy()
-        elif c == "4":
+        elif choice == "4":
             check_2fa()
-        elif c == "5":
-            print("Έξοδος από το πρόγραμμα...")
+        elif choice == "5":
+            print("Exiting program...")
             break
         else:
-            print("Μη έγκυρη επιλογή. Παρακαλώ δοκιμάστε ξανά.")
-
+            print("Invalid choice. Please try again.")
 
 if __name__ == "__main__":
     main()
