@@ -1,4 +1,5 @@
-**Project1.py - Systems Security Toolkit**  
+**Project1.py - Systems Security Toolkit**
+=
 
 Description:
 This is a Python command-line application that provides a set of security tools. It includes file hashing with salting, file integrity verification, Shannon entropy calculation, and a Two-Factor Authentication (2FA) module. It features an interactive Greek-language menu for easy navigation.
