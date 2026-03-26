@@ -15,6 +15,7 @@ Features & Menu Options:
 - Generates a random 16-byte salt and combines it with the file data.
 - Calculates the hash using one or all of the following algorithms: MD5, SHA-1, SHA-256, SHA-3 (Keccak).
 - Saves the algorithm name, the hex-encoded salt, and the final hash into a new <filename>.hash file.
+  ---
 
 2. Integrity Check (Έλεγχος Ακεραιότητας):
 - Security Gateway: Prompts the user to pass a 2FA check before proceeding.
