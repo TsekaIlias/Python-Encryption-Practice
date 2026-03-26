@@ -31,7 +31,7 @@ Features & Menu Options:
 4. 2FA Authentication:
 - Generates a Time-Based One-Time Password (TOTP) using a secure Base32 secret key.
 - Displays the current 6-digit OTP to the console and asks the user to input it for verification.
-
+---
 5. Exit (Έξοδος):
 - Closes the application.
 
