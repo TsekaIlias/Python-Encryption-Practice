@@ -2,7 +2,7 @@
 =
 
 Description:
-This is a Python command-line application that provides a set of security tools. It includes file hashing with salting, file integrity verification, Shannon entropy calculation, and a Two-Factor Authentication (2FA) module. It features an interactive Greek-language menu for easy navigation.
+This is a Python command-line application that provides a set of security tools. It includes file hashing with salting, file integrity verification, Shannon entropy calculation, and a Two-Factor Authentication (2FA) module. It features an interactive English-language menu for easy navigation
 
 Prerequisites:
 Before running the script, you must install the pyotp library, which is required for the 2FA functionality. You can install it via your terminal:
